@@ -1,0 +1,34 @@
+# Versionamento
+.git/
+.gitignore
+.dvc/cache/
+dvcstore/
+
+# Ambientes e caches
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Dados e artefatos pesados (montados via volume)
+data/raw/*
+data/processed/*
+models/*.pt
+models/*.joblib
+mlruns/
+mlflow.db
+
+# Notebooks e docs
+notebooks/
+docs/
+*.md
+!README.md
+
+# Sistema
+.DS_Store
+.env

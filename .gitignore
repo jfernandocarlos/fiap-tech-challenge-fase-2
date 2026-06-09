@@ -1,0 +1,62 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+
+# Dados versionados pelo DVC (o .dvc fica no git, o conteúdo não)
+/data/raw/*
+/data/processed/*
+!/data/raw/.gitkeep
+!/data/processed/.gitkeep
+!*.dvc
+
+# Modelos / artefatos
+models/*.pt
+models/*.pkl
+models/*.joblib
+models/*.json
+!models/.gitkeep
+
+# MLflow
+mlruns/
+mlartifacts/
+mlflow.db
+
+# DVC
+/dvcstore/
+
+# Testes e cobertura
+.pytest_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# Lint / type check
+.ruff_cache/
+.mypy_cache/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Ambiente
+.env
