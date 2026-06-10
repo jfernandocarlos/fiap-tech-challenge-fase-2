@@ -9,6 +9,10 @@ packages = [{ include = "recsys", from = "src" }]
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.13"
+pydantic-settings = ">=2.0"
+python-dotenv = ">=1.0"
+structlog = ">=24.0"
+pyyaml = ">=6.0"
 
 [tool.poetry.group.dev.dependencies]
 ruff = ">=0.4"

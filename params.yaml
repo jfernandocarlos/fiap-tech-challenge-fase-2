@@ -1,0 +1,20 @@
+data:
+  like_threshold: 4.0        # rating >= 4 => interação positiva ("gostou")
+  min_user_interactions: 5
+  min_item_interactions: 5
+  test_size: 0.2
+  val_size: 0.1
+  split_strategy: random     # random | temporal
+
+model:
+  embedding_dim: 32
+  hidden_layers: [64, 32]
+  dropout: 0.2
+
+train:
+  learning_rate: 0.001
+  weight_decay: 0.00001
+  batch_size: 1024
+  max_epochs: 30
+  patience: 3
+  threshold: 0.5
