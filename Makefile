@@ -22,6 +22,9 @@ format: ## Formata o código com ruff
 	poetry run ruff format src tests scripts
 	poetry run ruff check --fix src tests scripts
 
+download-data: ## Baixa o dataset do Kaggle
+	poetry run python -m scripts.download_data
+
 test: ## Executa os testes
 	poetry run pytest
 
