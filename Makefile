@@ -25,6 +25,9 @@ format: ## Formata o código com ruff
 download-data: ## Baixa o dataset do Kaggle
 	poetry run python -m scripts.download_data
 
+validate: ## Valida o ambiente
+	poetry run python -m scripts.validate_env
+
 test: ## Executa os testes
 	poetry run pytest
 
