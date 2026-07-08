@@ -8,13 +8,7 @@ import importlib
 import sys
 from pathlib import Path
 
-REQUIRED_PACKAGES = [
-    "pandas",
-    "numpy",
-    "pydantic_settings",
-    "structlog",
-    "yaml",
-]
+REQUIRED_PACKAGES = ["pandas", "numpy", "pydantic_settings", "structlog", "yaml", "sklearn"]
 MIN_PYTHON = (3, 10)
 
 
