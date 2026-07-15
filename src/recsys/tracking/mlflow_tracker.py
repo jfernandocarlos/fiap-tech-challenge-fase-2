@@ -76,10 +76,13 @@ def log_ncf_run(
     with mlflow.start_run(run_name="NCF_PyTorch") as run:
         mlflow.log_params(params)
         mlflow.log_metrics(metrics)
+        # MLflow 3.x defaulta para 'pt2' (traced graph), que exige input_example.
+        # Mantemos 'pickle' para registrar o nn.Module com forward(users, items).
         mlflow.pytorch.log_model(
             model,
             name="model",
             registered_model_name=register_as,
+            serialization_format="pickle",
         )
         mlflow.set_tag("stage", "neural_network")
         logger.info("NCF registrada", run_id=run.info.run_id, registered=register_as)

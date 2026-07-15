@@ -26,3 +26,6 @@ class Settings(BaseSettings):
 def load_params(path: Path = PARAMS_FILE) -> dict[str, Any]:
     with path.open(encoding="utf-8") as file:
         return yaml.safe_load(file)
+
+
+settings = Settings()

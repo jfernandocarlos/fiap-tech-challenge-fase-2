@@ -1,34 +1,44 @@
-.PHONY: help install validate lint format test download-data repro train evaluate \
+.PHONY: help install ensure-env validate lint format test download-data repro train evaluate \
         mlflow-ui promote-staging promote-production docker-build docker-up clean
 
 PYTHON := python
+# Python compatível com o projeto (>=3.10,<3.13). Fixa o venv do Poetry para
+# evitar que um `python` de outra versão no shell crie um venv vazio.
+PROJECT_PYTHON := 3.10.0
+PYENV_PYTHON := $(shell pyenv root 2>/dev/null)/versions/$(PROJECT_PYTHON)/bin/python
 
 help: ## Mostra esta ajuda
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | \
 		awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
 
-install: ## Instala dependências (prod + dev) com Poetry
+ensure-env:
+	@test -x "$(PYENV_PYTHON)" && poetry env use "$(PYENV_PYTHON)" >/dev/null 2>&1 || true
+
+install: ensure-env ## Instala dependências (prod + dev) com Poetry
 	poetry install
 	poetry run pre-commit install || true
 
-validate: ## Valida o ambiente
+validate: ensure-env ## Valida o ambiente
 	poetry run $(PYTHON) -m scripts.validate_env
 
-lint: ## Linting com ruff
+lint: ensure-env ## Linting com ruff
 	poetry run ruff check src tests scripts
 	poetry run ruff format --check src tests scripts
 
-format: ## Formata o código com ruff
+format: ensure-env ## Formata o código com ruff
 	poetry run ruff format src tests scripts
 	poetry run ruff check --fix src tests scripts
 
-download-data: ## Baixa o dataset do Kaggle
+download-data: ensure-env ## Baixa o dataset do Kaggle
 	poetry run python -m scripts.download_data
 
-validate: ## Valida o ambiente
-	poetry run python -m scripts.validate_env
+train: ensure-env ## Roda o pipeline completo (sem DVC)
+	poetry run python -m scripts.run_pipeline
 
-test: ## Executa os testes
+mlflow-ui: ensure-env ## Abre a UI local do MLflow
+	poetry run mlflow ui --backend-store-uri sqlite:///mlflow.db
+
+test: ensure-env ## Executa os testes
 	poetry run pytest
 
 clean: ## Remove caches e artefatos temporários
