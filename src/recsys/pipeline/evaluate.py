@@ -20,7 +20,11 @@ from src.recsys.features.engineering import FEATURE_COLUMNS, TARGET
 from src.recsys.logging_config import get_logger
 from src.recsys.models.factory import create_baselines, create_ncf
 from src.recsys.pipeline.base import PipelineStage
-from src.recsys.tracking.mlflow_tracker import log_sklearn_run, setup_mlflow
+from src.recsys.tracking.mlflow_tracker import (
+    append_metrics_to_run,
+    log_sklearn_run,
+    setup_mlflow,
+)
 
 logger = get_logger(__name__)
 
@@ -59,16 +63,20 @@ class EvaluateStage(PipelineStage):
         return results
 
     def _evaluate_ncf(self, test: pd.DataFrame, mappings: dict[str, int]) -> dict[str, float]:
-        """Carrega a NCF treinada e a avalia no teste."""
+        """Carrega a NCF treinada, avalia no teste e anexa métricas à run MLflow."""
         model = create_ncf(mappings["num_users"], mappings["num_items"], self.params["model"])
         model.load_state_dict(torch.load(MODELS_DIR / "ncf.pt", weights_only=True))
-        return evaluate_ncf(
+        metrics = evaluate_ncf(
             model,
             test["user_idx"].to_numpy(),
             test["item_idx"].to_numpy(),
             test[TARGET].to_numpy(),
             threshold=self.params["train"]["threshold"],
         )
+        # A run NCF_PyTorch é criada no train só com best_val_loss; aqui completamos
+        # com as métricas de teste para comparar com os baselines na UI do MLflow.
+        append_metrics_to_run("NCF_PyTorch", metrics)
+        return metrics
 
     def _persist(self, results: dict[str, dict[str, float]]) -> None:
         """Salva métricas (DVC) e o relatório comparativo (docs)."""
