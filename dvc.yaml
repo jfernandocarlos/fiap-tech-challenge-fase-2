@@ -1,0 +1,57 @@
+stages:
+  preprocess:
+    cmd: python -m src.recsys.pipeline.preprocess
+    deps:
+      - src/recsys/pipeline/preprocess.py
+      - src/recsys/data/loader.py
+      - src/recsys/data/splitting.py
+      - data/raw/ratings.csv
+    params:
+      - data
+    outs:
+      - data/processed/train.parquet
+      - data/processed/val.parquet
+      - data/processed/test.parquet
+
+  feature_eng:
+    cmd: python -m src.recsys.pipeline.feature_eng
+    deps:
+      - src/recsys/pipeline/feature_eng.py
+      - src/recsys/features/engineering.py
+      - data/processed/train.parquet
+      - data/processed/val.parquet
+      - data/processed/test.parquet
+    outs:
+      - data/processed/feat_train.parquet
+      - data/processed/feat_val.parquet
+      - data/processed/feat_test.parquet
+      - data/processed/mappings.json
+
+  train:
+    cmd: python -m src.recsys.pipeline.train
+    deps:
+      - src/recsys/pipeline/train.py
+      - src/recsys/models/ncf.py
+      - src/recsys/models/factory.py
+      - src/recsys/models/training.py
+      - data/processed/feat_train.parquet
+      - data/processed/feat_val.parquet
+      - data/processed/mappings.json
+    params:
+      - model
+      - train
+    outs:
+      - models/ncf.pt
+
+  evaluate:
+    cmd: python -m src.recsys.pipeline.evaluate
+    deps:
+      - src/recsys/pipeline/evaluate.py
+      - src/recsys/evaluation/metrics.py
+      - src/recsys/models/baselines.py
+      - data/processed/feat_train.parquet
+      - data/processed/feat_test.parquet
+      - models/ncf.pt
+    metrics:
+      - metrics.json:
+          cache: false

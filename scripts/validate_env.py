@@ -17,6 +17,7 @@ REQUIRED_PACKAGES = [
     "sklearn",
     "torch",
     "mlflow",
+    "dvc",
 ]
 MIN_PYTHON = (3, 10)
 

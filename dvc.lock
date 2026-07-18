@@ -1,0 +1,166 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python -m src.recsys.pipeline.preprocess
+    deps:
+    - path: data/raw/ratings.csv
+      hash: md5
+      md5: ca047f0e4676e08cf455469346bb4512
+      size: 2475052
+    - path: src/recsys/data/loader.py
+      hash: md5
+      md5: 57b37bd81c5f6c2922f3c380646a3335
+      size: 2202
+    - path: src/recsys/data/splitting.py
+      hash: md5
+      md5: 3e4e54c12c64a9b0e287ae0e8cb9cd32
+      size: 2996
+    - path: src/recsys/pipeline/preprocess.py
+      hash: md5
+      md5: 0957bbc73b477833e549ee3b601afc4e
+      size: 1681
+    params:
+      params.yaml:
+        data:
+          like_threshold: 4.0
+          min_user_interactions: 5
+          min_item_interactions: 5
+          test_size: 0.2
+          val_size: 0.1
+          split_strategy: random
+    outs:
+    - path: data/processed/test.parquet
+      hash: md5
+      md5: 74e7b7537cb12147602c6b305b9f965d
+      size: 217557
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: f2f24f590cfe4b744ceb1d3c2bd56ffb
+      size: 681684
+    - path: data/processed/val.parquet
+      hash: md5
+      md5: cabce7a864d0ff4aed3247925e147f3e
+      size: 116908
+  feature_eng:
+    cmd: python -m src.recsys.pipeline.feature_eng
+    deps:
+    - path: data/processed/test.parquet
+      hash: md5
+      md5: 74e7b7537cb12147602c6b305b9f965d
+      size: 217557
+    - path: data/processed/train.parquet
+      hash: md5
+      md5: f2f24f590cfe4b744ceb1d3c2bd56ffb
+      size: 681684
+    - path: data/processed/val.parquet
+      hash: md5
+      md5: cabce7a864d0ff4aed3247925e147f3e
+      size: 116908
+    - path: src/recsys/features/engineering.py
+      hash: md5
+      md5: e9b52bab0334c8b02b562327a115de93
+      size: 3849
+    - path: src/recsys/pipeline/feature_eng.py
+      hash: md5
+      md5: 62a2227e7db5fedfccf6353521138de7
+      size: 1770
+    outs:
+    - path: data/processed/feat_test.parquet
+      hash: md5
+      md5: ec57697e3d9ad803ce07299d15148ecb
+      size: 438191
+    - path: data/processed/feat_train.parquet
+      hash: md5
+      md5: 10a393137c059cc397377cdadd834766
+      size: 1359460
+    - path: data/processed/feat_val.parquet
+      hash: md5
+      md5: f0b05232f14f61394e9dd322d03b27b8
+      size: 243273
+    - path: data/processed/mappings.json
+      hash: md5
+      md5: 4af9b02a079381de49b7eb9ca695bda8
+      size: 37
+  train:
+    cmd: python -m src.recsys.pipeline.train
+    deps:
+    - path: data/processed/feat_train.parquet
+      hash: md5
+      md5: 10a393137c059cc397377cdadd834766
+      size: 1359460
+    - path: data/processed/feat_val.parquet
+      hash: md5
+      md5: f0b05232f14f61394e9dd322d03b27b8
+      size: 243273
+    - path: data/processed/mappings.json
+      hash: md5
+      md5: 4af9b02a079381de49b7eb9ca695bda8
+      size: 37
+    - path: src/recsys/models/factory.py
+      hash: md5
+      md5: 45ed5a5aee393264a5d07c83ed354a66
+      size: 1297
+    - path: src/recsys/models/ncf.py
+      hash: md5
+      md5: dd2cba69c473fa07f9a349f0e55d3dfa
+      size: 2256
+    - path: src/recsys/models/training.py
+      hash: md5
+      md5: 268624ab37841ffac5edd8d28efb8275
+      size: 4071
+    - path: src/recsys/pipeline/train.py
+      hash: md5
+      md5: 74a55a96b77c9e0d9258b832963a6932
+      size: 2380
+    params:
+      params.yaml:
+        model:
+          embedding_dim: 32
+          hidden_layers:
+          - 64
+          - 32
+          dropout: 0.2
+        train:
+          learning_rate: 0.001
+          weight_decay: 1e-05
+          batch_size: 1024
+          max_epochs: 30
+          patience: 3
+          threshold: 0.5
+    outs:
+    - path: models/ncf.pt
+      hash: md5
+      md5: a598459b608adde88399dd3526cebcd8
+      size: 610765
+  evaluate:
+    cmd: python -m src.recsys.pipeline.evaluate
+    deps:
+    - path: data/processed/feat_test.parquet
+      hash: md5
+      md5: ec57697e3d9ad803ce07299d15148ecb
+      size: 438191
+    - path: data/processed/feat_train.parquet
+      hash: md5
+      md5: 10a393137c059cc397377cdadd834766
+      size: 1359460
+    - path: models/ncf.pt
+      hash: md5
+      md5: a598459b608adde88399dd3526cebcd8
+      size: 610765
+    - path: src/recsys/evaluation/metrics.py
+      hash: md5
+      md5: 143754b9c336146c14bf27b9773d1d2a
+      size: 3634
+    - path: src/recsys/models/baselines.py
+      hash: md5
+      md5: 42ff34f08e81c3af0c13a07d169f37f4
+      size: 1295
+    - path: src/recsys/pipeline/evaluate.py
+      hash: md5
+      md5: 2979461feae9ea91199fa36d91fa92b3
+      size: 5476
+    outs:
+    - path: metrics.json
+      hash: md5
+      md5: 2ceba79ec99edfbc84c03a718a9576da
+      size: 1398

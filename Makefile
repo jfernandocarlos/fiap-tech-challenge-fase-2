@@ -38,6 +38,9 @@ train: ensure-env ## Roda o pipeline completo (sem DVC)
 mlflow-ui: ensure-env ## Abre a UI local do MLflow
 	poetry run mlflow ui --backend-store-uri sqlite:///mlflow.db
 
+repro: ## Roda o pipeline completo via DVC
+	poetry run dvc repro
+
 test: ensure-env ## Executa os testes
 	poetry run pytest
 
