@@ -38,6 +38,12 @@ train: ensure-env ## Roda o pipeline completo (sem DVC)
 mlflow-ui: ensure-env ## Abre a UI local do MLflow
 	poetry run mlflow ui --backend-store-uri sqlite:///mlflow.db
 
+promote-staging: ## Promove a última versão para staging
+	poetry run $(PYTHON) -m scripts.promote_model --alias staging
+
+promote-production: ## Promove a última versão para production
+	poetry run $(PYTHON) -m scripts.promote_model --alias production
+
 repro: ## Roda o pipeline completo via DVC
 	poetry run dvc repro
 
