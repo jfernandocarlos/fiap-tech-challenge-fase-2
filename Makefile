@@ -47,6 +47,12 @@ promote-production: ## Promove a última versão para production
 repro: ## Roda o pipeline completo via DVC
 	poetry run dvc repro
 
+docker-build: ## Constrói a imagem Docker
+	docker compose build
+
+docker-up: ## Sobe MLflow + treino via docker compose
+	docker compose up
+
 test: ensure-env ## Executa os testes
 	poetry run pytest
 
